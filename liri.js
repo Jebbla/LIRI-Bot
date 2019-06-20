@@ -1,11 +1,11 @@
-require("dotenv").config();
+//require("dotenv").config('../LIRI-Bot/.env');
 
 var fs = require("fs");
 // Spotify package
-var Spotify = require('node-spotify-api');
-require("dotenv").config();
+//var Spotify = require('node-spotify-api');
+//require("dotenv").config();
 var keys = require("./keys.js");
-var spotify = new Spotify(keys.spotify);
+//var spotify = new Spotify(keys.spotify);
 // Axios package
 var axios = require("axios");
 // Moment package
@@ -17,32 +17,37 @@ var command = nodeArgs[2];
 var input = nodeArgs.slice(3);
 
 
+var bandsInTown = function (band) {
+  var queryURL = "https://rest.bandsintown.com/artists/" + band + "/events?app_id=codingbootcamp";
+  console.log("in bands");
+  axios.get(queryURL).then(
+      function (response) {
+          var res = response.data;
+          for (var i = 0; i < res.length; i++) {
+              var concert = res[i];
+              console.log(concert.venue.name);
+              console.log(concert.venue.city);
+              console.log(moment(concert.datetime).format("MM/DD/YYYY"))
+          }
+      })
+};
 
+function movieSearch(searchTerm) {
+  axios
+    .get(`http://www.omdbapi.com/?t=${searchTerm}&y=&plot=short&apikey=trilogy`)
+    .then(function(response) {
+      const data = response.data;
+      movieArr = [
+        `title: ${data.Title}`,
+        `year: ${data.Year}`,
+        `imdb rating: ${data.imdbRating}`,
+        `plot: ${data.Plot}`,
+        `actors: ${data.Actors}\n`
+      ];
+      appendResults(movieArr.join(`\n------------\n`));
+      console.log(`\n---------YOUR MOVIE RESULTS-------\n`);
+      console.log(movieArr.join("\n----------\n"));
+      //console.log(data)
+    });
+}
 
-
-
-// Then run a request with axios to the OMDB API with the movie specified
-// axios.get("http://www.omdbapi.com/?t=remember+the+titans&y=&plot=short&apikey=trilogy").then(
-//   function(response) {
-//     console.log("The movie's rating is: " + response.data.imdbRating);
-//   })
-//   .catch(function(error) {
-//     if (error.response) {
-//       // The request was made and the server responded with a status code
-//       // that falls out of the range of 2xx
-//       console.log("---------------Data---------------");
-//       console.log(error.response.data);
-//       console.log("---------------Status---------------");
-//       console.log(error.response.status);
-//       console.log("---------------Status---------------");
-//       console.log(error.response.headers);
-//     } else if (error.request) {
-//       // The request was made but no response was received
-//       // `error.request` is an object that comes back with details pertaining to the error that occurred.
-//       console.log(error.request);
-//     } else {
-//       // Something happened in setting up the request that triggered an Error
-//       console.log("Error", error.message);
-//     }
-//     console.log(error.config);
-//   });
